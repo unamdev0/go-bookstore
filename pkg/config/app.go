@@ -2,8 +2,10 @@ package config
 
 import (
 	"fmt"
+	"log"
 	"os"
 
+	"github.com/joho/godotenv"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -13,13 +15,15 @@ var (
 )
 
 func Connect() {
+	err := godotenv.Load("../../.env")
+	if err != nil {
+		log.Fatal("Error loading .env file", err)
+	}
 	username := os.Getenv("DATABASE_USERNAME")
 	password := os.Getenv("DATABASE_PASSWORD")
-	// host := os.Getenv("DATABASE_HOST")
-	// port := os.Getenv("DATABASE_PORT")
 	dbname := os.Getenv("DATABASE_NAME")
 
-	dsn := fmt.Sprintf(username, ":", password, "@/", dbname, "?charset=utf8&parseTime=True&loc=Local")
+	dsn := fmt.Sprintf(username + ":" + password + "@/" + dbname + "?charset=utf8mb4&parseTime=True&loc=Local")
 	d, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 
 	if err != nil {
